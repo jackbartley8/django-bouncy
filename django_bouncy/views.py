@@ -24,7 +24,7 @@ from django_bouncy import signals
 #    'SigningCertURL'
 #]
 VITAL_NOTIFICATION_FIELDS = [
-    'notificationType', 'mail', 'bouncy'
+    'notificationType', 'mail', 'bounce'
 ]
 
 VITAL_MESSAGE_FIELDS = [
