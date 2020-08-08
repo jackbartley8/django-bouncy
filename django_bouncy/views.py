@@ -82,7 +82,7 @@ def endpoint(request):
 
     # Ensure that the type of notification is one we'll accept
     if not data['notificationType'] in ALLOWED_TYPES:
-        logger.info('Notification Type Not Known %s', data['notificationType'])
+        print('Notification Type Not Known %s', data['notificationType'])
         return HttpResponseBadRequest('Unknown Notification Type')
 
     # Confirm that the signing certificate is hosted on a correct domain
@@ -118,7 +118,7 @@ def endpoint(request):
         # We won't handle unsubscribe requests here. Return a 200 status code
         # so Amazon won't redeliver the request. If you want to remove this
         # endpoint, remove it either via the API or the AWS Console
-        logger.info('UnsubscribeConfirmation Not Handled')
+        print('UnsubscribeConfirmation Not Handled')
         return HttpResponse('UnsubscribeConfirmation Not Handled')
 
     try:
@@ -126,7 +126,7 @@ def endpoint(request):
     except ValueError:
         # This message is not JSON. But we need to return a 200 status code
         # so that Amazon doesn't attempt to deliver the message again
-        logger.info('Non-Valid JSON Message Received')
+        print('Non-Valid JSON Message Received')
         return HttpResponse('Message is not valid JSON')
 
     return process_message(message, data)
@@ -142,7 +142,7 @@ def process_message(message, notification):
         # At this point we're sure that it's Amazon sending the message
         # If we don't return a 200 status code, Amazon will attempt to send us
         # this same message a few seconds later.
-        logger.info('JSON Message Missing Vital Fields')
+        print('JSON Message Missing Vital Fields')
         return HttpResponse('Missing Vital Fields')
 
     if message['notificationType'] == 'Complaint':
@@ -190,7 +190,7 @@ def process_bounce(message, notification):
             notification=notification
         )
 
-    logger.info('Logged %s Bounce(s)', str(len(bounces)))
+    print('Logged %s Bounce(s)', str(len(bounces)))
 
     return HttpResponse('Bounce Processed')
 
@@ -231,7 +231,7 @@ def process_complaint(message, notification):
             notification=notification
         )
 
-    logger.info('Logged %s Complaint(s)', str(len(complaints)))
+    print('Logged %s Complaint(s)', str(len(complaints)))
 
     return HttpResponse('Complaint Processed')
 
@@ -271,6 +271,6 @@ def process_delivery(message, notification):
             notification=notification
         )
 
-    logger.info('Logged %s Deliveries(s)', str(len(deliveries)))
+    print('Logged %s Deliveries(s)', str(len(deliveries)))
 
     return HttpResponse('Delivery Processed')
