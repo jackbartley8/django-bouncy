@@ -77,6 +77,7 @@ def endpoint(request):
     # Comparison code from http://stackoverflow.com/questions/1285911/
     if not set(VITAL_NOTIFICATION_FIELDS) <= set(data):
         logger.warning('Request Missing Necessary Keys')
+        print(set(data),set(VITAL_NOTIFICATION_FIELDS))
         return HttpResponseBadRequest('Request Missing Necessary Keys')
 
     # Ensure that the type of notification is one we'll accept
