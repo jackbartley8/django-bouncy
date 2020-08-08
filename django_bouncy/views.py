@@ -18,10 +18,13 @@ from django_bouncy.utils import (
 from django_bouncy.models import Bounce, Complaint, Delivery
 from django_bouncy import signals
 
+#VITAL_NOTIFICATION_FIELDS = [
+#    'Type', 'Message', 'Timestamp', 'Signature',
+#    'SignatureVersion', 'TopicArn', 'MessageId',
+#    'SigningCertURL'
+#]
 VITAL_NOTIFICATION_FIELDS = [
-    'Type', 'Message', 'Timestamp', 'Signature',
-    'SignatureVersion', 'TopicArn', 'MessageId',
-    'SigningCertURL'
+    'notificationType', 'mail', 'bouncy'
 ]
 
 VITAL_MESSAGE_FIELDS = [
@@ -77,40 +80,40 @@ def endpoint(request):
         return HttpResponseBadRequest('Request Missing Necessary Keys')
 
     # Ensure that the type of notification is one we'll accept
-    if not data['Type'] in ALLOWED_TYPES:
-        logger.info('Notification Type Not Known %s', data['Type'])
+    if not data['notificationType'] in ALLOWED_TYPES:
+        logger.info('Notification Type Not Known %s', data['notificationType'])
         return HttpResponseBadRequest('Unknown Notification Type')
 
     # Confirm that the signing certificate is hosted on a correct domain
     # AWS by default uses sns.{region}.amazonaws.com
     # On the off chance you need this to be a different domain, allow the
     # regex to be overridden in settings
-    domain = urlparse(data['SigningCertURL']).netloc
-    pattern = getattr(
-        settings, 'BOUNCY_CERT_DOMAIN_REGEX', r"sns.[a-z0-9\-]+.amazonaws.com$"
-    )
-    if not re.search(pattern, domain):
-        logger.warning(
-            'Improper Certificate Location %s', data['SigningCertURL'])
-        return HttpResponseBadRequest('Improper Certificate Location')
+    #domain = urlparse(data['SigningCertURL']).netloc
+    #pattern = getattr(
+        #settings, 'BOUNCY_CERT_DOMAIN_REGEX', r"sns.[a-z0-9\-]+.amazonaws.com$"
+    #)
+    #if not re.search(pattern, domain):
+        #logger.warning(
+            #'Improper Certificate Location %s', data['SigningCertURL'])
+        #return HttpResponseBadRequest('Improper Certificate Location')
 
     # Verify that the notification is signed by Amazon
-    if (getattr(settings, 'BOUNCY_VERIFY_CERTIFICATE', True)
-            and not verify_notification(data)):
-        logger.error('Verification Failure %s', )
-        return HttpResponseBadRequest('Improper Signature')
+    #if (getattr(settings, 'BOUNCY_VERIFY_CERTIFICATE', True)
+            #and not verify_notification(data)):
+        #logger.error('Verification Failure %s', )
+        #return HttpResponseBadRequest('Improper Signature')
 
     # Send a signal to say a valid notification has been received
     signals.notification.send(
         sender='bouncy_endpoint', notification=data, request=request)
 
     # Handle subscription-based messages.
-    if data['Type'] == 'SubscriptionConfirmation':
+    if data['notificationType'] == 'SubscriptionConfirmation':
         # Allow the disabling of the auto-subscription feature
         if not getattr(settings, 'BOUNCY_AUTO_SUBSCRIBE', True):
             raise Http404
         return approve_subscription(data)
-    elif data['Type'] == 'UnsubscribeConfirmation':
+    elif data['notificationType'] == 'UnsubscribeConfirmation':
         # We won't handle unsubscribe requests here. Return a 200 status code
         # so Amazon won't redeliver the request. If you want to remove this
         # endpoint, remove it either via the API or the AWS Console
