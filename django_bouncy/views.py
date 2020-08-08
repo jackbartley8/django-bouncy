@@ -32,7 +32,7 @@ VITAL_MESSAGE_FIELDS = [
 ]
 
 ALLOWED_TYPES = [
-    'Notification', 'SubscriptionConfirmation', 'UnsubscribeConfirmation'
+    'Notification', 'SubscriptionConfirmation', 'UnsubscribeConfirmation','Bounce'
 ]
 logger = logging.getLogger(__name__)
 
