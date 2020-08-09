@@ -122,7 +122,7 @@ def endpoint(request):
         return HttpResponse('UnsubscribeConfirmation Not Handled')
 
     try:
-        message = json.loads(data['Message'])
+        message = data#json.loads(data['Message'])
     except ValueError:
         # This message is not JSON. But we need to return a 200 status code
         # so that Amazon doesn't attempt to deliver the message again
