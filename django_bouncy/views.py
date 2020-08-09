@@ -188,7 +188,8 @@ def process_bounce(message, notification):
             sender=Bounce,
             instance=bounce,
             message=message,
-            notification=notification
+            notification=notification,
+            email=address
         )
 
     print('Logged {} Bounce(s)'.format(str(len(bounces))))
