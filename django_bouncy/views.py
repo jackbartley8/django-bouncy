@@ -164,21 +164,21 @@ def process_bounce(message, notification):
     for recipient in bounce['bouncedRecipients']:
         # Create each bounce record. Add to a list for reference later.
         bounces += [Bounce.objects.create(
-            sns_topic=notification['TopicArn'],
-            sns_messageid=notification['MessageId'],
-            mail_timestamp=clean_time(mail['timestamp']),
-            mail_id=mail['messageId'],
-            mail_from=mail['source'],
-            address=recipient['emailAddress'],
-            feedback_id=bounce['feedbackId'],
-            feedback_timestamp=clean_time(bounce['timestamp']),
-            hard=bool(bounce['bounceType'] == 'Permanent'),
-            bounce_type=bounce['bounceType'],
-            bounce_subtype=bounce['bounceSubType'],
-            reporting_mta=bounce.get('reportingMTA'),
-            action=recipient.get('action'),
-            status=recipient.get('status'),
-            diagnostic_code=recipient.get('diagnosticCode')
+            sns_topic=mail['sourceArn'],#notification['TopicArn'],
+            sns_messageid=mail['Id'],#notification['MessageId'],
+            mail_timestamp=clean_time(mail['timestamp']),#good
+            mail_id=mail['sendingAccountId'],#['messageId'],
+            mail_from=mail['source'],#good
+            address=recipient['emailAddress'],#good
+            feedback_id=bounce['feedbackId'],#good
+            feedback_timestamp=clean_time(bounce['timestamp']),#good
+            hard=bool(bounce['bounceType'] == 'Permanent'),#good
+            bounce_type=bounce['bounceType'],#good
+            bounce_subtype=bounce['bounceSubType'],#good
+            reporting_mta=bounce.get('reportingMTA'),#shouldbegood
+            action=recipient.get('action'),#shouldbegood
+            status=recipient.get('status'),#shouldbegood
+            diagnostic_code=recipient.get('diagnosticCode')#shouldbegood
         )]
 
     # Send signals for each bounce.
@@ -201,7 +201,7 @@ def process_complaint(message, notification):
     complaint = message['complaint']
 
     if 'arrivalDate' in complaint:
-        arrival_date = clean_time(complaint['arrivalDate'])
+        arrival_date = clean_time(complaint['arrivalDate'])#unknown
     else:
         arrival_date = None
 
@@ -209,16 +209,16 @@ def process_complaint(message, notification):
     for recipient in complaint['complainedRecipients']:
         # Create each Complaint. Save in a list for reference later.
         complaints += [Complaint.objects.create(
-            sns_topic=notification['TopicArn'],
-            sns_messageid=notification['MessageId'],
-            mail_timestamp=clean_time(mail['timestamp']),
-            mail_id=mail['messageId'],
-            mail_from=mail['source'],
-            address=recipient['emailAddress'],
-            feedback_id=complaint['feedbackId'],
-            feedback_timestamp=clean_time(complaint['timestamp']),
-            useragent=complaint.get('userAgent'),
-            feedback_type=complaint.get('complaintFeedbackType'),
+            sns_topic=mail['SourceArn'],#notification['TopicArn'],
+            sns_messageid=mail['Id'],#notification['MessageId'],
+            mail_timestamp=clean_time(mail['timestamp']),#good
+            mail_id=mail['sendingAccountId'],#['messageId'],
+            mail_from=mail['source'],#good
+            address=recipient['emailAddress'],#good
+            feedback_id=complaint['feedbackId'],#good
+            feedback_timestamp=clean_time(complaint['timestamp']),#good
+            useragent=complaint.get('userAgent'),#unknown
+            feedback_type=complaint.get('complaintFeedbackType'),#unknown
             arrival_date=arrival_date
         )]
 
@@ -242,7 +242,7 @@ def process_delivery(message, notification):
     delivery = message['delivery']
 
     if 'timestamp' in delivery:
-        delivered_datetime = clean_time(delivery['timestamp'])
+        delivered_datetime = clean_time(delivery['timestamp'])#good
     else:
         delivered_datetime = None
 
@@ -250,16 +250,16 @@ def process_delivery(message, notification):
     for eachrecipient in delivery['recipients']:
         # Create each delivery 
         deliveries += [Delivery.objects.create(
-            sns_topic=notification['TopicArn'],
-            sns_messageid=notification['MessageId'],
-            mail_timestamp=clean_time(mail['timestamp']),
-            mail_id=mail['messageId'],
-            mail_from=mail['source'],
+            sns_topic=mail['SourceArn'],#notification['TopicArn'],
+            sns_messageid=mail['Id'],#notification['MessageId'],
+            mail_timestamp=clean_time(mail['timestamp']),#good
+            mail_id=mail['sendingAccountId'],#['messageId'],
+            mail_from=mail['source'],#good
             address=eachrecipient,
             # delivery
             delivered_time=delivered_datetime,
-            processing_time=int(delivery['processingTimeMillis']),
-            smtp_response=delivery['smtpResponse']
+            processing_time=int(delivery['processingTimeMillis']),#unknown
+            smtp_response=delivery['smtpResponse']#unknown
         )]
 
     # Send signals for each delivery.
