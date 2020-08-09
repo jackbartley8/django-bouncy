@@ -191,7 +191,7 @@ def process_bounce(message, notification):
             notification=notification
         )
 
-    print('Logged %s Bounce(s)', str(len(bounces)))
+    print('Logged {} Bounce(s)'.format(str(len(bounces))))
 
     return HttpResponse('Bounce Processed')
 
