@@ -159,7 +159,7 @@ def process_bounce(message, notification):
     """Function to process a bounce notification"""
     mail = message['mail']
     bounce = message['bounce']
-    print(mail,bounce)
+    #print(mail,bounce)
 
     bounces = []
     for recipient in bounce['bouncedRecipients']:
