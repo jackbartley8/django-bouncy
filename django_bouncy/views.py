@@ -166,7 +166,7 @@ def process_bounce(message, notification):
         # Create each bounce record. Add to a list for reference later.
         bounces += [Bounce.objects.create(
             sns_topic=mail['sourceArn'],#notification['TopicArn'],
-            sns_messageid=mail['Id'],#notification['MessageId'],
+            sns_messageid=mail['messageId'],#notification['MessageId'],
             mail_timestamp=clean_time(mail['timestamp']),#good
             mail_id=mail['sendingAccountId'],#['messageId'],
             mail_from=mail['source'],#good
@@ -211,7 +211,7 @@ def process_complaint(message, notification):
         # Create each Complaint. Save in a list for reference later.
         complaints += [Complaint.objects.create(
             sns_topic=mail['SourceArn'],#notification['TopicArn'],
-            sns_messageid=mail['Id'],#notification['MessageId'],
+            sns_messageid=mail['messageId'],#notification['MessageId'],
             mail_timestamp=clean_time(mail['timestamp']),#good
             mail_id=mail['sendingAccountId'],#['messageId'],
             mail_from=mail['source'],#good
@@ -252,7 +252,7 @@ def process_delivery(message, notification):
         # Create each delivery 
         deliveries += [Delivery.objects.create(
             sns_topic=mail['SourceArn'],#notification['TopicArn'],
-            sns_messageid=mail['Id'],#notification['MessageId'],
+            sns_messageid=mail['messageId'],#notification['MessageId'],
             mail_timestamp=clean_time(mail['timestamp']),#good
             mail_id=mail['sendingAccountId'],#['messageId'],
             mail_from=mail['source'],#good
